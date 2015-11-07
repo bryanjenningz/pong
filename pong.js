@@ -30,10 +30,16 @@
         var top = (body) => body.center.y - body.size.y / 2;
         var bottom = (body) => body.center.y + body.size.y / 2;
         return body !== other && 
-          !(left(body) < right(other) && right(body) > left(other)) &&
-          !(top(body) < bottom(other) && bottom(body) > top(other));
+          ((left(body) < right(other) && right(body) > left(other) &&
+            top(body) < bottom(other) && bottom(body) > top(other)) ||
+          (left(other) < right(body) && right(other) > left(body) &&
+            top(other) < bottom(body) && bottom(other) > top(body)));
       });
     });
+  };
+
+  var isBall = function(body) {
+    return body instanceof Ball;
   };
 
   Game.prototype = {
@@ -41,6 +47,10 @@
       for (var i = 0; i < this.bodies.length; i++) {
         this.bodies[i].update();
       }
+      collisions(this.bodies).filter(isBall).forEach(function(ball) {
+        ball.velocity.x *= -1;
+        ball.velocity.y = Math.floor(Math.random() * 11) - 5;
+      });
     },
     draw: function(screen, gameSize) {
       screen.clearRect(0, 0, gameSize.x, gameSize.y);
