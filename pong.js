@@ -4,7 +4,11 @@
     var screen = canvas.getContext('2d');
     var gameSize = { x: canvas.width, y: canvas.height };
 
-    this.bodies = [new Player(this, gameSize), new Ball(this, gameSize)];
+    var player1 = new Player(this, gameSize, { UP: 87, DOWN: 83 }, 10);
+    var player2 = new Player(this, gameSize, { UP: 38, DOWN: 40 }, gameSize.x - 10);
+
+
+    this.bodies = [player1, player2, new Ball(this, gameSize)];
 
     var self = this;
     var loop = function() {
@@ -23,12 +27,13 @@
   };
 
   var collisions = function(bodies) {
+    var right = (body) => body.center.x + body.size.x / 2;
+    var left = (body) => body.center.x - body.size.x / 2;
+    var top = (body) => body.center.y - body.size.y / 2;
+    var bottom = (body) => body.center.y + body.size.y / 2;
+
     return bodies.filter(function(body) {
       return bodies.some(function(other) {
-        var right = (body) => body.center.x + body.size.x / 2;
-        var left = (body) => body.center.x - body.size.x / 2;
-        var top = (body) => body.center.y - body.size.y / 2;
-        var bottom = (body) => body.center.y + body.size.y / 2;
         return body !== other && 
           ((left(body) < right(other) && right(body) > left(other) &&
             top(body) < bottom(other) && bottom(body) > top(other)) ||
@@ -60,12 +65,12 @@
     }
   };
 
-  var Player = function(game, gameSize) {
+  var Player = function(game, gameSize, keys, x) {
     this.game = game;
     this.gameSize = gameSize;
     this.size = { x: 10, y: 40 };
-    this.center = { x: 20, y: gameSize.y / 2 };
-    this.keyboard = new Keyboard();
+    this.center = { x: x || 20, y: gameSize.y / 2 };
+    this.keyboard = new Keyboard(keys);
   };
 
   Player.prototype = {
@@ -80,22 +85,27 @@
     }
   };
 
-  var Keyboard = function(keys) {
+  var Keyboard = (function() {
+    // nonglobal keyState hashtable that's shared by all Keyboard instances
     var keyState = {};
-    this.KEYS = keys || { UP: 38, DOWN: 40 };
 
-    this.isDown = function(keyCode) {
-      return keyState[keyCode] === true;
-    };
+    return function(keys) {
+      this.KEYS = keys || { UP: 38, DOWN: 40 };
+      this.isDown = function(keyCode) {
+        return keyState[keyCode] === true;
+      };
 
-    window.onkeydown = function(e) {
-      keyState[e.keyCode] = true;
-    };
+      window.onkeydown = function(e) {
+        console.log(JSON.stringify(self.KEYS));
+        keyState[e.keyCode] = true;
+      };
 
-    window.onkeyup = function(e) {
-      keyState[e.keyCode] = false;
+      window.onkeyup = function(e) {
+        keyState[e.keyCode] = false;
+      };
     };
-  };
+  })();
+  
 
   var Ball = function(game, gameSize, startHeight) {
     this.game = game;
