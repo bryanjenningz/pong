@@ -111,7 +111,7 @@
     this.game = game;
     this.gameSize = gameSize;
     this.size = { x: 10, y: 10 };
-    this.velocity = { x: 3, y: 0 };
+    this.velocity = { x: (Math.floor(Math.random() * 2) ? 1 : -1) * 3, y: 0 };
     this.center = {
       x: gameSize.x / 2,
       y: startHeight || Math.floor(Math.random() 
