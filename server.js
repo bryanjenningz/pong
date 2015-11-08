@@ -7,7 +7,9 @@ var path = require('path');
 app.use('/', express.static(path.join(__dirname, 'public')));
 
 io.on('connection', function(socket) {
-  console.log('A user connected');
+  socket.on('updateScreen', function(gameInfo) {
+    io.emit('updateScreen', gameInfo);
+  });
 });
 
 http.listen(80, function() {

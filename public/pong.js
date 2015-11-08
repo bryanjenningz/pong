@@ -7,12 +7,26 @@
 
     var player1 = new Player(this, gameSize, { UP: 87, DOWN: 83 }, 10);
     var player2 = new Player(this, gameSize, { UP: 38, DOWN: 40 }, gameSize.x - 10);
-    this.bodies = [player1, player2, new Ball(this, gameSize)];
+    var ball = new Ball(this, gameSize)
+    this.bodies = [player1, player2, ball];
+
+    socket.on('updateScreen', function(gameInfo) {
+      player1.center.y = gameInfo.player1Y;
+      player2.center.y = gameInfo.player2Y;
+      ball.center.x = gameInfo.ballX;
+      ball.center.y = gameInfo.ballY;
+    });
 
     var self = this;
     var loop = function() {
       self.update();
       self.draw(screen, gameSize);
+      socket.emit('updateScreen', {
+        player1Y: player1.center.y,
+        player2Y: player2.center.y,
+        ballX: ball.center.x,
+        ballY: ball.center.y
+      });
       requestAnimationFrame(loop);
     };
 
@@ -95,7 +109,6 @@
       };
 
       window.onkeydown = function(e) {
-        console.log(JSON.stringify(self.KEYS));
         keyState[e.keyCode] = true;
       };
 
@@ -128,6 +141,8 @@
       if (this.center.y <= 0 || this.center.y >= this.gameSize.y) {
         this.velocity.y *= -1;
       }
+      if (this.center.y < 0) this.center.y = 0;
+      if (this.center.y > this.gameSize.y) this.center.y = this.gameSize.y;
     }
   };
 
