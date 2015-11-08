@@ -8,7 +8,7 @@ app.use('/', express.static(path.join(__dirname, 'public')));
 
 io.on('connection', function(socket) {
   socket.on('updateScreen', function(gameInfo) {
-    io.emit('updateScreen', gameInfo);
+    socket.broadcast.emit('updateScreen', gameInfo);
   });
 });
 

@@ -15,6 +15,8 @@
       player2.center.y = gameInfo.player2Y;
       ball.center.x = gameInfo.ballX;
       ball.center.y = gameInfo.ballY;
+      ball.velocity.x = gameInfo.velocityX;
+      ball.velocity.y = gameInfo.velocityY;
     });
 
     var self = this;
@@ -25,7 +27,9 @@
         player1Y: player1.center.y,
         player2Y: player2.center.y,
         ballX: ball.center.x,
-        ballY: ball.center.y
+        ballY: ball.center.y,
+        velocityX: ball.velocity.x,
+        velocityY: ball.velocity.y
       });
       requestAnimationFrame(loop);
     };
@@ -67,7 +71,7 @@
       }
       collisions(this.bodies).filter(isBall).forEach(function(ball) {
         ball.velocity.x *= -1;
-        ball.velocity.y = Math.floor(Math.random() * 11) - 5;
+        ball.velocity.y = Math.floor(Math.random() * 6) - 5;
       });
     },
     draw: function(screen, gameSize) {
@@ -123,7 +127,7 @@
     this.game = game;
     this.gameSize = gameSize;
     this.size = { x: 10, y: 10 };
-    this.velocity = { x: (Math.floor(Math.random() * 2) ? 1 : -1) * 3, y: 0 };
+    this.velocity = { x: (Math.floor(Math.random() * 2) ? 1 : -1) * 2, y: 0 };
     this.center = {
       x: gameSize.x / 2,
       y: startHeight || Math.floor(Math.random() 
